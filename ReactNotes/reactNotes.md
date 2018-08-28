@@ -37,6 +37,28 @@ They are side-effect free and will create the same behaviour always **(Idempoten
 
 They also do not require internal state management.
 
+Another example of Stateless component:
+
+```javascript
+// When using JSX inside a module you must import React
+import React from 'react';
+import PropTypes from 'prop-types';
+
+const FirstComponent = props => (
+    <div>
+        Hello, {props.name}! I am a FirstComponent.
+    </div>
+);
+
+//arrow components also may have props validation
+FirstComponent.propTypes = {
+    name: PropTypes.string.isRequired,
+}
+
+// To use FirstComponent in another file it must be exposed through an export call:
+export default FirstComponent;
+```
+
 #### 2. React.createClass()
 
 ```javascript
@@ -60,3 +82,52 @@ class ThirdComponent extends React.Component {
     }
 }
 ```
+
+> **"Functional components cannot have "state" within them. So if your component needs to have a state, then go for class based components"**
+
+### Props
+Props are a way to pass information into a React component, they can have any type including functions - sometimes referred to as callbacks.
+
+#### propTypes and defaultProps
+It's important to define all props, their types, and where applicable, their default value
+
+```javascript
+// defined at the bottom of MyComponent
+MyComponent.propTypes = {
+    someObject: React.PropTypes.object,
+    userID: React.PropTypes.number.isRequired,
+    title: React.PropTypes.string
+};
+
+MyComponent.defaultProps = {
+    someObject: {},
+    title: 'My Default Title'
+}
+```
+In this example the prop someObject is optional, but the prop userID is required. If you fail to provide userID to MyComponent, at runtime the React engine will show a console warning you that the required prop was not provided. Beware though, this warning is only shown in the development version of the React library, the production version will not log any warnings.
+
+### State in React
+State in React components is essential to manage and communicate data in your application. It is represented as a JavaScript object and has a component level scope, it can be thought of as the private data of your component.
+
+In the example below we are defining some initial state in the constructor function of our component and make use of it in the render function:
+```javascript
+class ExampleComponent extends React.Component {
+    constructor(props){
+        super(props);
+        // Set-up our initial state
+        this.state = {
+            greeting: 'Hiya Buddy!'
+        };
+    }
+    render() {
+        // We can access the greeting property through this.state
+        return(
+            <div>{this.state.greeting}</div>
+        );
+    }
+}
+```
+
+#### setState()
+React monitors every component state for changes. But for React to do so efficiently, we have to change the state field through another React API - **this.setState()**
+This function will perform a **_shallow merge_** between the new state that you provide and the previous state, and will trigger a re-render of your component and all decedents.
