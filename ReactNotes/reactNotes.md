@@ -85,6 +85,92 @@ class ThirdComponent extends React.Component {
 
 > **"Functional components cannot have "state" within them. So if your component needs to have a state, then go for class based components"**
 
+### Types of Components in React
+#### 1. Stateless Component
+It does not contain state. It may use props and return JSX.
+```javascript
+import React, { Component } from 'react';
+import { render } from 'react-dom';
+class FirstComponent extends Component {
+    render() {
+        return (
+            <div>
+                Hello, {this.props.name}! I am a FirstComponent.
+            </div>
+        );
+    }
+}
+    
+render(
+    <FirstComponent name={ 'User' } />,
+    document.getElementById('content')
+);
+```    
+For stateless components, people find it preferabble to use **stateless functional Component** which are based on ES6 arrow functions.
+```javascript
+const FirstComponent = props => (
+    <div>
+        Hello, {props.name}! I am a FirstComponent.
+    </div>
+);
+```
+#### 2. Stateful Component
+In contrast to the 'stateless' components shown above, 'stateful' components have a state object that can be updated with the **setState** method. The state must be initialized in the constructor before it can be set:
+```javascript
+import React, { Component } from 'react';
+class SecondComponent extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            toggle: true
+        };
+        // This is to bind context when passing onClick as a callback
+        this.onClick = this.onClick.bind(this);
+    }
+    
+    onClick() {
+        this.setState((prevState, props) => ({
+            toggle: !prevState.toggle
+        }));
+    }
+    
+    render() {
+        return (
+            <div onClick={this.onClick}>
+                Hello, {this.props.name}! I am a SecondComponent.
+                <br />
+                Toggle is: {this.state.toggle}
+            </div>
+        );
+    }
+}
+```
+#### 3. Higher Order Component
+Higher order components (HOC) allow to share component functionality.
+Higher order components are used when you want to share logic across several components regardless of how different they render.
+```javascript
+import React, { Component } from 'react';
+const PrintHello = ComposedComponent => class extends Component {
+    onClick() {
+        console.log('hello');
+    }
+    
+    /* The higher order component takes another component as a parameter
+    and then renders it with additional props */
+    render() {
+        return <ComposedComponent {...this.props } onClick={this.onClick} />
+    }
+}
+
+const FirstComponent = props => (
+    <div onClick={ props.onClick }>
+        Hello, {props.name}! I am a FirstComponent.
+    </div>
+);
+
+const ExtendedComponent = PrintHello(FirstComponent);
+```
+
 ### Props
 Props are a way to pass information into a React component, they can have any type including functions - sometimes referred to as callbacks.
 
@@ -131,3 +217,36 @@ class ExampleComponent extends React.Component {
 #### setState()
 React monitors every component state for changes. But for React to do so efficiently, we have to change the state field through another React API - **this.setState()**
 This function will perform a **_shallow merge_** between the new state that you provide and the previous state, and will trigger a re-render of your component and all decedents.
+
+**Parameters of setState() api:**
+1. updater: It can be an object with a number of key-value pairs that should be merged into the state or a function that returns such an object.
+    * Using with Object as 1st param:
+        ```javascript
+        this.setState({
+            greeting: 'Hello World!'
+        });
+        ```
+    * Using with function as 1st param: This is often used when you want to check or make use of previous state before updating the state.
+        ```javascript
+        this.setState(function(previousState, currentProps) {
+            return {
+                counter: previousState.counter + 1
+            };
+        });
+        ```
+        The functional approach can also be used to move state setting logic outside of components. This allows for isolation and re-use of state logic.
+        ```javascript
+        // Outside of component class, potentially in another file/module
+        function incrementCounter(previousState, currentProps) {
+            return {
+                counter: previousState.counter + 1
+            };
+        }
+        
+        // Within component
+        this.setState(incrementCounter);
+        ```
+2. callback (optional): a function which will be executed after setState() has been executed successfully.
+Due to the fact that calls to setState() are not guaranteed by React to be atomic, this can sometimes be useful if you want to perform some action after you are positive that setState() has been executed successfully.
+    `this.setState({ name: 'John Doe' }, console.log('Hi there'));`
+
