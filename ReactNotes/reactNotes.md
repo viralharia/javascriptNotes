@@ -177,6 +177,7 @@ Props are a way to pass information into a React component, they can have any ty
 #### propTypes and defaultProps
 It's important to define all props, their types, and where applicable, their default value
 
+**ES6**
 ```javascript
 // defined at the bottom of MyComponent
 MyComponent.propTypes = {
@@ -190,7 +191,59 @@ MyComponent.defaultProps = {
     title: 'My Default Title'
 }
 ```
+**ES7**
+```javascript
+class MyClass extends React.Component {
+    static propTypes = {
+        randomObject: React.PropTypes.object,
+        callback: React.PropTypes.func.isRequired,
+        ...
+    };
+    
+    static defaultProps = {
+        randomObject: {},
+        ...
+    };
+}
+```
 In this example the prop someObject is optional, but the prop userID is required. If you fail to provide userID to MyComponent, at runtime the React engine will show a console warning you that the required prop was not provided. Beware though, this warning is only shown in the development version of the React library, the production version will not log any warnings.
+
+Some primitive propTypes and commonly useable propTypes are -
+* optionalArray: React.PropTypes.array,
+* optionalBool: React.PropTypes.bool,
+* optionalFunc: React.PropTypes.func,
+* optionalNumber: React.PropTypes.number,
+* optionalObject: React.PropTypes.object,
+* optionalString: React.PropTypes.string,
+* optionalSymbol: React.PropTypes.symbol
+
+**More complex props validation**
+In the same way, PropTypes allows you to specify more complex validation
+**Validating an object**
+```javascript
+...
+randomObject: React.PropTypes.shape({
+    id: React.PropTypes.number.isRequired,
+    text: React.PropTypes.string,
+}).isRequired,
+...
+```
+**Validating on array of objects**
+```javascript
+...
+arrayOfObjects: React.PropTypes.arrayOf(React.PropTypes.shape({
+    id: React.PropTypes.number.isRequired,
+    text: React.PropTypes.string,
+})).isRequired,
+...
+```
+
+#### Passing down props using spread operator
+Instead of
+`var component = <Component foo={this.props.x} bar={this.props.y} />;`
+Where each property needs to be passed as a single prop value you could use the spread operator ... supported for arrays in ES6 to pass down all your values. 
+The component will now look like this.
+`var component = <Component {...props} />;`
 
 ### State in React
 State in React components is essential to manage and communicate data in your application. It is represented as a JavaScript object and has a component level scope, it can be thought of as the private data of your component.
