@@ -303,3 +303,120 @@ This function will perform a **_shallow merge_** between the new state that you 
 Due to the fact that calls to setState() are not guaranteed by React to be atomic, this can sometimes be useful if you want to perform some action after you are positive that setState() has been executed successfully.
     `this.setState({ name: 'John Doe' }, console.log('Hi there'));`
 
+## React AJAX call
+### 1. Using 'Superagent' library
+A request can be initiated by invoking the appropriate method on the **request** object, then calling **_.end()_** to send the request.
+##### Get request example:
+```javascript
+import React from 'react'
+import request from 'superagent'
+class App extends React.Component {
+    constructor () {
+        super()
+        this.state = {}
+    }
+    componentDidMount () {
+        request
+        .get('/search')
+        .query({ query: 'Manny' })
+        .query({ range: '1..5' })
+        .query({ order: 'desc' })
+        .set('API-Key', 'foobar')
+        .set('Accept', 'application/json')
+        .end((err, resp) => {
+        if (!err) {
+            this.setState({someData: resp.text})
+        }
+        })
+    },
+    render() {
+        return (
+            <div>{this.state.someData || 'waiting for response...'}</div>
+        )
+    }
+}
+React.render(<App />, document.getElementById('root'))
+```
+* **_set()_** - Setting header fields is simple, invoke **_.set()_** with a field name and value.
+* **_query_** - The **_.query()_** method accepts objects, which when used with the GET method will form a query-string. 
+The following will produce the path -  /search?query=Manny&range=1..5&order=desc.
+
+##### POST request example:
+```javascript
+request.post('/user')
+    .set('Content-Type', 'application/json')
+    .send('{"name":"tj","pet":"tobi"}')
+    .end(callback)
+```
+
+### 2. Using 'fetch' library
+**_fetch_**, is build into most browsers. Use a **_fetch polyfill_** in production to support older browsers.
+```javascript
+import React from 'react';
+class Users extends React.Component {
+    constructor() {
+        super();
+        this.state = { users: [] };
+    }
+    componentDidMount() {
+        fetch('/api/users')
+        .then(response => response.json())
+        .then(json => this.setState({ users: json.data }));
+    }
+    render() {
+        return (
+            <div>
+                <h1>Users</h1>
+                {
+                    this.state.users.length == 0
+                    ? 'Loading users...'
+                    : this.state.users.map(user => (
+                    <figure key={user.id}>
+                        <img src={user.avatar} />
+                        <figcaption>
+                            {user.name}
+                        </figcaption>
+                    </figure>
+                    ))
+                }
+            </div>
+        );
+    }
+}
+ReactDOM.render(<Users />, document.getElementById('root'));
+```
+
+### 3. Using plain vanilla javascript. Without any library
+```javascript
+import React from 'react'
+class App extends React.Component {
+    constructor () {
+        super()
+        this.state = {someData: null}
+    }
+    componentDidMount () {
+        var request = new XMLHttpRequest();
+        request.open('GET', '/my/url', true);
+        request.onload = () => {
+            if (request.status >= 200 && request.status < 400) {
+                // Success!
+                this.setState({someData: request.responseText})
+            } else {
+                // We reached our target server, but it returned an error
+                // Possibly handle the error by changing your state.
+            }
+        };
+        request.onerror = () => {
+            // There was a connection error of some sort.
+            // Possibly handle the error by changing your state.
+        };
+        request.send();
+    },
+    render() {
+        return (
+            <div>{this.state.someData || 'waiting for response...'}</div>
+        )
+    }
+}
+React.render(<App />, document.getElementById('root'))
+```
