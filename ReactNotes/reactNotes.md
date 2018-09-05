@@ -420,3 +420,35 @@ class App extends React.Component {
 }
 React.render(<App />, document.getElementById('root'))
 ```
+### Some Tips and Tricks
+#### Using single quotes instead of back-ticks
+Strings created with back-ticks (`` `...` ``) are different from strings created with single quotes ('...').
+
+We create a string using back-ticks when we need to include dynamic expressions inside that string (without resorting to string concatenation).
+```javascript
+`This is a string template literal that can include expressions`
+'This is just a string, you cannot include expressions here'
+```
+Let’s say you want a string that always reports the current time: 
+“Time is ...”
+```javascript
+// Current time string
+const time = new Date().toLocaleTimeString();
+// When using regular strings (single or double quotes), 
+// you need to use string concatenation:
+'Time is ' + time
+// When using back-ticks,
+// you can inject the time in the string using ${}
+`Time is ${time}`
+```
+Also, when using string literals (with back-ticks), you can create a string that spans multiple lines:
+```javascript
+const template = `I
+CAN
+SPAN
+Multiple Lines`;
+```
+You can’t do that with regular strings.
+
+
+
