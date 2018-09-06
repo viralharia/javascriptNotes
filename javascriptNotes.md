@@ -97,10 +97,79 @@ When a function returns a function, that is when the concept of closures becomes
 
 > In JavaScript, **_closure_** are created every time a function is created, at function creation time.
 
+> **_closure_** is when a function is able to remember and access its lexical scope even when that function is executing outside its lexical scope.
+
 To use a **_closure_**, simply define a function inside another function and expose it. To expose a function, return it or pass it to another function.
 
 The inner function will have access to the variables in the outer function scope, even after the outer function has returned.
 
 #### Usage of Closure:
 Data privacy OR Encapsulation
+```javascript
+var getDay = (function () {
+    var days = [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday'
+    ];
+
+    return function ( n ) {
+        return days[ n - 1 ];
+    };
+}());
+```
+The idea is to assign an IIFE (Immediately-invoked function expression) which returns a function to a variable. After this assignment, the variable holds the function that was returned from the IIFE. Since this function was nested inside the IIFE, it has access to all its local variables and arguments, even though the IIFE itself doesn't exist anymore.
+
+So, the whole purpose of the IIFE in the above example was to define an days array which acts as a private variable of the getDay function.
+
+Another example:
+```javascript
+var dwightSalary = (function() {
+    var salary = 60000;
+    function changeBy(amount) {
+        salary += amount;
+    }
+    return {
+        raise: function() {
+            changeBy(5000);
+        },
+        lower: function() {
+            changeBy(-5000);
+        },
+        currentAmount: function() {
+            return salary;
+        }
+    }; 
+})();
+
+alert(dwightSalary.currentAmount()); // $60,000
+dwightSalary.raise();
+alert(dwightSalary.currentAmount()); // $65,000
+dwightSalary.lower();
+dwightSalary.lower();
+alert(dwightSalary.currentAmount()); // $55,000
+
+dwightSalary.changeBy(10000) // TypeError: undefined is not a function
+```
+
+#### Function factories
+One powerful use of closures is to use the outer function as a factory for creating functions that are somehow related.
+```javascript
+function dwightJob(title) {
+    return function(prefix) {
+        return prefix + ' ' + title;
+    };
+}
+
+var sales = dwightJob('Salesman');
+var manager = dwightJob('Manager');
+
+alert(sales('Top'));  // Top Salesman
+alert(manager('Assistant to the Regional')); // Assistant to the Regional Manager
+alert(manager('Regional')); // Regional Manager
+```
 In functional programming, closures are frequently used for partial application & currying
