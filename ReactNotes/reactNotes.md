@@ -240,10 +240,12 @@ arrayOfObjects: React.PropTypes.arrayOf(React.PropTypes.shape({
 
 #### Passing down props using spread operator
 Instead of
-`var component = <Component foo={this.props.x} bar={this.props.y} />;`
-Where each property needs to be passed as a single prop value you could use the spread operator ... supported for arrays in ES6 to pass down all your values. 
+`var component = <Component foo={this.props.foo} bar={this.props.bar} />;`
+Where each property needs to be passed to the same name property in the child component, you could use the spread operator `...` 
 The component will now look like this.
 `var component = <Component {...props} />;`
+The properties of the object that you pass in are copied onto the component's props.
+supported for arrays in ES6 to pass down all your values. 
 
 ### State in React
 State in React components is essential to manage and communicate data in your application. It is represented as a JavaScript object and has a component level scope, it can be thought of as the private data of your component.
